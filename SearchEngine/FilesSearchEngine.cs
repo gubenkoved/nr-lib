@@ -13,7 +13,5 @@ namespace NRLib
         public abstract IEnumerable<FileMatchInfo> Search(string searchQuery);
 
         protected abstract void IndexFile(FileInfo fileInfo);
-
     }
-
 }
