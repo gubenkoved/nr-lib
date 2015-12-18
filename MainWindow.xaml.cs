@@ -18,16 +18,13 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
 using Microsoft.Win32;
+using NRLib.Search;
+using NRLib.Common;
 
 namespace NRLib
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private IEnumerable<string> m_allowedExtensions;
-        private Regex m_fileNameTemplateRegex = new Regex(@"^((?<autors>[^-]+)-(?<name>.+)\.(?<extension>[^.]+))|((?<name>.+)\.(?<extension>[^.]+))$", RegexOptions.RightToLeft | RegexOptions.Compiled);
         private bool m_searching;
         private string m_libDir
         {
@@ -42,13 +39,17 @@ namespace NRLib
             }
         }
         private ViewMode m_viewMode;
-        
+
         public ObservableCollection<Book> Books { get; private set; }
         public ObservableCollection<Book> Favorites { get; private set; }
         public ObservableCollection<string> LastQueries { get; private set; }
 
-        public MainWindow()
+        protected SearchEngine m_searcher;
+
+        public MainWindow(SearchEngine searchEngine)
         {
+            m_searcher = searchEngine;
+
             Init();
 
             InitializeComponent();
@@ -56,12 +57,14 @@ namespace NRLib
             // I don't know how to bind from resource section (Window.Resources) to root element (Window)
             ((FavoriteConverter)Resources["FavoriteConverter"]).FavoriteBooksCollection = Favorites;
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             QueryBox.Focus();
 
-            Activate();            
+            Activate();
         }
+
         void Init()
         {
             m_viewMode = ViewMode.SearchResults;
@@ -90,17 +93,25 @@ namespace NRLib
             Favorites = new ObservableCollection<Book>(
                 Properties.Settings.Default.Favorites
                 .OfType<string>()
-                .Select(path => CreateBookFromFileInfo(new FileInfo(path))));
+                .Select(path => BookProvisioner.Current.TryConstructBookDefinitionFor(path)));
 
             Favorites.CollectionChanged += (s, a) => SaveFavorites();
             #endregion
 
-            m_allowedExtensions = Properties.Settings.Default.Extensions.Split('|').Select(e => e.ToLower());
+            m_searcher.Error += search_ErrorHandler;
+            m_searcher.RootDirectory = m_libDir;
         }
+
+        private void search_ErrorHandler(object sender, SearchErrorArgs arg)
+        {
+            MessageBox.Show(arg.Exception?.Message ?? "<no details>", "Error on search!");
+        }
+
         void Invoke(Action action)
         {
             Dispatcher.Invoke((Delegate)action);
         }
+    
         void SaveFavorites()
         {
             if (Properties.Settings.Default.Favorites == null)
@@ -111,24 +122,7 @@ namespace NRLib
 
             Properties.Settings.Default.Save();
         }
-        void RecourseLookIn(DirectoryInfo dir, string query)
-        {
-            try
-            {
-                foreach (var file in dir.GetFiles())
-                {
-                    TryAddBook(file, query);
-                }
 
-                foreach (var subdirectory in dir.GetDirectories())
-                {
-                    RecourseLookIn(subdirectory, query);
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
         void UpdateLastQueries(string query)
         {
             if (LastQueries.Contains(query))
@@ -154,60 +148,27 @@ namespace NRLib
             Task searchTask = new Task(
                 () =>
                 {
-                    RecourseLookIn(directory, query);
+                    foreach (var searchResult in m_searcher.Search(query))
+                    {
+                        Invoke(() => AddBook(searchResult.Book));
+                    }
+
                     Dispatcher.Invoke((Action)(() => SearchCompleted()));
                 });
 
             searchTask.Start();
-        }        
+        }    
+            
         void SearchCompleted()
         {
             SearchProgress.IsIndeterminate = false;
 
             m_searching = false;
         }
+
         void AddBook(Book book)
         {
             Books.Add(book);
-        }
-        void TryAddBook(FileInfo file, string query)
-        {
-            if (m_allowedExtensions.Contains(file.Extension.ToLower()))
-            {
-                if ( query.Split(' ').All(s => file.FullName.ToLower().IndexOf(s.ToLower()) != -1))
-                {
-                    Book book = CreateBookFromFileInfo(file);
-
-                    if (book != null)
-                        Invoke(() => AddBook(book));
-                }
-            }
-        }
-        Book CreateBookFromFileInfo(FileInfo file)
-        {
-            Match templated = m_fileNameTemplateRegex.Match(file.Name);
-
-            if (templated.Success)
-            {
-                List<string> authors = new List<string>();
-
-                if (templated.Groups["autors"].Success)
-                {
-                    foreach (var autor in templated.Groups["autors"].Value.Split(','))
-                    {
-                        authors.Add(autor.Trim());
-                    }
-                }
-
-                return new Book() {
-                    FileInfo = file,
-                    Name = templated.Groups["name"].Value.Trim(),
-                    Extension = templated.Groups["extension"].Value.Trim(),
-                    Authors = authors
-                };
-            }
-
-            return null;
         }
 
         private void Search_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -366,54 +327,7 @@ namespace NRLib
         }
     }
 
-    [Serializable]
-    public class Book
-    {
-        private FileInfo m_fileInfo;
-        public FileInfo FileInfo
-        {
-            get { return m_fileInfo; }
-            set { m_fileInfo = value; }
-        }
-        [NonSerialized]
-        private IEnumerable<string> m_authors;
-        public IEnumerable<string> Authors
-        {
-            get { return m_authors; }
-            set { m_authors = value; }
-        }
-        
-        [NonSerialized]
-        private string m_name;
-        public string Name
-        {
-            get { return m_name; }
-            set { m_name = value; }
-        }
-        
-        [NonSerialized]
-        private string m_extension;
-        public string Extension
-        {
-            get { return m_extension; }
-            set { m_extension = value; }
-        }        
-
-        public Book()
-        {
-            Authors = new List<string>();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Book)
-            {
-                return this.FileInfo.FullName == ((Book)obj).FileInfo.FullName;
-            }
-
-            return false;
-        }
-    }
+    
 
     public class FavoriteConverter : DependencyObject, IValueConverter
     {

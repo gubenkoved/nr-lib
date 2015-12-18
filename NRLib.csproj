@@ -42,6 +42,10 @@
     <ApplicationIcon>lib.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -62,10 +66,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="SearchEngine\DirectoryTraverser.cs" />
-    <Compile Include="SearchEngine\FileMatchInfo.cs" />
-    <Compile Include="SearchEngine\FilesSearchEngine.cs" />
+    <Compile Include="IoC.cs" />
+    <Compile Include="Common\Book.cs" />
+    <Compile Include="Common\BookProvisioner.cs" />
+    <Compile Include="Search\DirectoryTraverser.cs" />
+    <Compile Include="Search\DumbSearchEngine.cs" />
+    <Compile Include="Search\MatchInfo.cs" />
+    <Compile Include="Search\IndexingManager.cs" />
+    <Compile Include="Search\SearchEngine.cs" />
     <Compile Include="MultiplierConverter.cs" />
+    <Compile Include="Search\SearchError.cs" />
     <Compile Include="ToogleImageButton.xaml.cs">
       <DependentUpon>ToogleImageButton.xaml</DependentUpon>
     </Compile>
@@ -113,6 +123,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

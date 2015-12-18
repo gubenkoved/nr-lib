@@ -7,10 +7,17 @@ using System.Windows;
 
 namespace NRLib
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            IoC.Init();
+
+            MainWindow mainWindow = IoC.Get<MainWindow>();
+
+            mainWindow.Show();
+        }
     }
 }
