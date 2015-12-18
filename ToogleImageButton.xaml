@@ -1,0 +1,60 @@
+﻿<Button x:Class="NRLib.ToogleImageButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="Root" xmlns:my="clr-namespace:NRLib">
+    <Button.Resources>
+        <my:MultiplierConverter x:Key="MultiplierConverter" Multiplier="0.5" />
+    </Button.Resources>
+    <Button.Template>
+        <ControlTemplate>
+            <ControlTemplate.Triggers>
+                <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="0.90" RepeatBehavior="Forever" AutoReverse="True" Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="DefaultScaleTransformer" Duration="00:00:00.2"/>
+                            <DoubleAnimation To="0.90" RepeatBehavior="Forever" AutoReverse="True" Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="DefaultScaleTransformer" Duration="00:00:00.2"/>
+
+                            <DoubleAnimation To="0.90" RepeatBehavior="Forever" AutoReverse="True" Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="ToogledScaleTransformer" Duration="00:00:00.2"/>
+                            <DoubleAnimation To="0.90" RepeatBehavior="Forever" AutoReverse="True" Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="ToogledScaleTransformer" Duration="00:00:00.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Mouse.MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="DefaultScaleTransformer" Duration="00:00:00.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="DefaultScaleTransformer" Duration="00:00:00.2"/>
+                            
+                            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="ToogledScaleTransformer" Duration="00:00:00.2"/>                            
+                            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="ToogledScaleTransformer" Duration="00:00:00.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </ControlTemplate.Triggers>
+            <Border BorderBrush="{TemplateBinding BorderBrush}">
+                <Grid>
+                    <Image Name="DefaultImageControl" Source="{Binding ElementName=Root, Path=DefaultImage}">
+                        <Image.RenderTransform>
+                            <ScaleTransform 
+                                CenterX="{Binding ElementName=DefaultImageControl, Path=ActualWidth, Converter={StaticResource MultiplierConverter}}"
+                                CenterY="{Binding ElementName=DefaultImageControl, Path=ActualHeight, Converter={StaticResource MultiplierConverter}}"
+                                ScaleX="1.0" ScaleY="1.0" x:Name="DefaultScaleTransformer" />
+                        </Image.RenderTransform>
+                    </Image>
+                    <Image Opacity="0.0" Name="ToogledImageControl" Source="{Binding ElementName=Root, Path=ToogledImage}">
+                        <Image.RenderTransform>
+                            <ScaleTransform 
+                                CenterX="{Binding ElementName=ToogledImageControl, Path=ActualWidth, Converter={StaticResource MultiplierConverter}}"
+                                CenterY="{Binding ElementName=ToogledImageControl, Path=ActualHeight, Converter={StaticResource MultiplierConverter}}"
+                                ScaleX="1.0" ScaleY="1.0" x:Name="ToogledScaleTransformer" />
+                        </Image.RenderTransform>
+                    </Image>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+    </Button.Template>
+</Button>
