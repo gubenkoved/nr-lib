@@ -31,7 +31,7 @@ namespace NRLib.Search
             {
                 string[] terms = searchQuery.Split(' ');
 
-                if (terms.All(s => book.FileInfo.FullName.ToLower().IndexOf(s.ToLower()) != -1))
+                if (terms.All(s => book.FileInfo.FullName.ToLower().Contains(s.ToLower())))
                 {
                     yield return new MatchInfo()
                     {

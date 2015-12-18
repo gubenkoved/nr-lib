@@ -71,7 +71,7 @@ namespace NRLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(".pdf|.djvu|.txt|.doc|.docx|.fb2|.xls|.xlsx|.chm")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".pdf|.djvu|.txt|.doc|.docx|.fb2|.xls|.xlsx|.chm|.epub")]
         public string Extensions {
             get {
                 return ((string)(this["Extensions"]));

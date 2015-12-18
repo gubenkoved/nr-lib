@@ -69,7 +69,6 @@
     <Compile Include="IoC.cs" />
     <Compile Include="Common\Book.cs" />
     <Compile Include="Common\BookProvisioner.cs" />
-    <Compile Include="Search\DirectoryTraverser.cs" />
     <Compile Include="Search\DumbSearchEngine.cs" />
     <Compile Include="Search\MatchInfo.cs" />
     <Compile Include="Search\IndexingManager.cs" />

@@ -15,7 +15,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Extensions" Type="System.String" Scope="User">
-      <Value Profile="(Default)">.pdf|.djvu|.txt|.doc|.docx|.fb2|.xls|.xlsx|.chm</Value>
+      <Value Profile="(Default)">.pdf|.djvu|.txt|.doc|.docx|.fb2|.xls|.xlsx|.chm|.epub</Value>
     </Setting>
   </Settings>
 </SettingsFile>
