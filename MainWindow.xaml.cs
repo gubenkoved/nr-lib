@@ -98,8 +98,12 @@ namespace NRLib
             Favorites.CollectionChanged += (s, a) => SaveFavorites();
             #endregion
 
+            #region Search engine
             m_searcher.Error += search_ErrorHandler;
             m_searcher.RootDirectory = m_libDir;
+
+            m_searcher.Init();
+            #endregion
         }
 
         private void search_ErrorHandler(object sender, SearchErrorArgs arg)

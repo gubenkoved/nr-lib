@@ -14,8 +14,8 @@ namespace NRLib.Search
 
         public string RootDirectory { get; set; }
 
-        public abstract IEnumerable<MatchInfo> Search(string searchQuery);
+        public abstract void Init();
 
-        protected abstract void IndexBook(Book bookInfo);
+        public abstract IEnumerable<MatchInfo> Search(string searchQuery);
     }
 }

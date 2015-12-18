@@ -13,6 +13,11 @@ namespace NRLib.Search
     {
         public override event ErrorHandler Error;
 
+        public override void Init()
+        {
+            // no-op, no index - all in runtime
+        }
+
         public override IEnumerable<MatchInfo> Search(string searchQuery)
         {
             if (RootDirectory == null)
@@ -39,11 +44,6 @@ namespace NRLib.Search
                     };
                 }
             }
-        }
-
-        protected override void IndexBook(Book bookInfo)
-        {
-            // no-op, no index - all in runtime
         }
 
         protected void RaiseError(SearchErrorArgs errorInfo)
