@@ -22,7 +22,6 @@
         <CommandBinding Command="local:Commands.ChangeLibDirCommand" Executed="ChangeLibDir_Executed"/>
         <CommandBinding Command="local:Commands.ToogleFavoriteCommand" Executed="ToogleFavorite_Executed"/>
         <CommandBinding Command="local:Commands.ShowFavoritesCommand" Executed="ShowFavorites_Executed"/>
-        
     </Window.CommandBindings>
     <Window.Resources>
         <local:FavoriteConverter x:Key="FavoriteConverter" FavoriteBookImage="/NRLib;component/Images/heart.png" NotFavoriteBookImage="/NRLib;component/Images/heart-bw.png" />
@@ -47,14 +46,26 @@
                         ItemsSource="{Binding Path=Authors}"
                         HorizontalAlignment="Stretch"
                         BorderBrush="{x:Null}"
-                        HorizontalContentAlignment="Center"
                         Background="{x:Null}"
                         Foreground="#FF0066C2"
                         VerticalAlignment="Center"
                         Cursor="Hand"
                         MouseLeftButtonUp="AutorList_SelectAutor"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        />
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <Grid TextBlock.TextAlignment="Center">
+                                                <ContentPresenter />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
                     <TextBlock 
                         Grid.Column="2"
                         Text="{Binding Path=Name}"
@@ -74,7 +85,8 @@
                         <GradientStop Color="#FFF5F5F8" Offset="0" />
                         <GradientStop Color="#FFDEDEDE" Offset="1" />
                     </LinearGradientBrush>-->
-                    <SolidColorBrush Color="#FFF0F0F2"/>
+                    <!--<SolidColorBrush Color="#FFF0F0F2"/>-->
+                    <SolidColorBrush Color="Transparent"/>
                 </Border.Background>
                 <Border.ContextMenu>
                     <ContextMenu>
@@ -109,12 +121,12 @@
         </DataTemplate>
         <Style x:Key="MyListBoxStyle">
             <Style.Resources>
-                <!-- Background of selected item when focussed -->
+                <!-- Background of selected item when focused -->
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                <!-- Background of selected item when not focussed -->
+                <!-- Background of selected item when not focused -->
                 <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
             </Style.Resources>
-        </Style>        
+        </Style>
     </Window.Resources>
     <Grid>
         <ListBox 
@@ -125,16 +137,27 @@
             IsTextSearchEnabled="False"
             ItemsSource="{Binding Path=Books}"
             Style="{StaticResource MyListBoxStyle}"
-            BorderBrush="LightGray">
+            BorderBrush="LightGray"
+            AlternationCount="2">
             <!--ScrollViewer.CanContentScroll="False"-->
             
             <!--get rid of spacing between list items-->
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex"  Value="0">
+                            <Setter Property="Background" Value="#FFFAFAFA" />
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex"  Value="1">
+                            <Setter Property="Background" Value="#FFF0F0FF" />
+                        </Trigger>
+                    </Style.Triggers>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <ContentPresenter/>
+                                <Grid Background="{TemplateBinding Background}">
+                                    <ContentPresenter />
+                                </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
